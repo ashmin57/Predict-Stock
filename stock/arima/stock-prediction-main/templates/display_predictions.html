@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predictions Table</title>
+</head>
+<body>
+    <h1>Existing Predictions</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Symbol</th> <!-- New column for Symbol -->
+                <th>Date</th>
+                <th>Close Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in predictions %}
+                <tr>
+                    <td>{{ prediction.symbol }}</td> <!-- Display Symbol -->
+                    <td>{{ prediction.date }}</td>
+                    <td>{{ prediction.close_price }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No predictions available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

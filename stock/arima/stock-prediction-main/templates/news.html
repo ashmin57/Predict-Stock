@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<!-- ======= Breadcrumbs Section ======= -->
+<section class="breadcrumbs">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>News Page</h2>
+        </div>
+
+    </div>
+</section><!-- End Breadcrumbs Section -->
+<section class="inner-page">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>LATEST NEWS</h2>
+        </div>
+
+        <div class="row">
+
+            {% if news %}
+            {% for item in news %}
+            <div class="col-lg-6 col-md-6 d-flex align-items-stretch mt-4">
+                <div class="member" data-aos="fade-up" data-aos-delay="100">
+                    <div class="member-img">
+                        <img src="{{ item.image }}" class="card-img-top" style="height: 350px;"
+                            alt="could not load image" />
+                    </div>
+                    <div class="member-info my-2">
+                        <h4>{{ item.title | safe }}</h4>
+                        <!-- <span>Chief Executive Officer</span> -->
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-danger m" role="alert">
+                Could not load headlines. <a href="/news">Try Again</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
