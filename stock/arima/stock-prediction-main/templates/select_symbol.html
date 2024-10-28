@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<section id="select-symbol" class="d-flex align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3 pt-5">
+                <h2 class="mb-4 text-center" data-aos="fade-up">Select a Stock Symbol for Prediction</h2>
+                <form method="post" action="{% url 'select_symbol' %}" data-aos="fade-up" data-aos-delay="400">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="symbol" class="form-label">Select Symbol:</label>
+                        <select name="symbol" id="symbol" class="form-control" required>
+                            <option value="" disabled selected>Select a symbol</option>
+                            {% for symbol in symbols %}
+                                <option value="{{ symbol }}" {% if selected_symbol == symbol %}selected{% endif %}>
+                                    {{ symbol }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-4 text-center">
+                        <input type="submit" value="Predict" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display prediction results below the form -->
+        <div class="row mt-5" data-aos="fade-up" data-aos-delay="600">
+            <div class="col-lg-12">
+                <h2 class="mb-4 text-center">Prediction Results for {{ selected_symbol }}</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Symbol</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Close Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                                {% for item in data %}
+                                    <tr>
+                                        <td>{{ item.symbol }}</td>
+                                        <td>{{ item.date|date:"Y-m-d" }}</td>
+                                        <td>{{ item.close_price }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No predictions found for the given symbol.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

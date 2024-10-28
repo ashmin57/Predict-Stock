@@ -130,4 +130,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR,''),
 )
 
+LOGIN_REDIRECT_URL = '/predict' 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

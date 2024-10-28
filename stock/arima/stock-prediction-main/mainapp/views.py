@@ -145,6 +145,24 @@ def results_view(request, symbol):
     return render(request, 'results.html', context)
 
 
+def select_symbol(request):
+    # Fetch unique stock symbols from the Prediction model (or adjust to your actual model)
+    symbols = Prediction.objects.values_list('symbol', flat=True).distinct()
+    selected_symbol = None
+    data = None
+
+    if request.method == 'POST':
+        selected_symbol = request.POST.get('symbol')
+        if selected_symbol:
+            # Fetch prediction data for the selected symbol (case-insensitive)
+            data = Prediction.objects.filter(symbol__iexact=selected_symbol)
+
+    return render(request, 'select_symbol.html', {
+        'symbols': symbols,
+        'selected_symbol': selected_symbol,
+        'data': data,
+    })
+
 def data_download(request):
     return render(request, 'data.html')
 
@@ -290,3 +308,15 @@ def news(request):
             else:
                 data = {'news': None}
                 return render(request, 'news.html', data)
+
+
+#admin
+from django.contrib.auth.views import LoginView
+from django.urls import path
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'  # Path to your login template
+
+urlpatterns = [
+    path('login/', CustomLoginView.as_view(), name='login'),
+]
