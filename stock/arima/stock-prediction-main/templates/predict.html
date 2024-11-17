@@ -1,6 +1,10 @@
-{% extends 'layout.html' %}
+{% extends 'layout_admin.html' %}
 {% block content %}
-
+<style>
+    .text-success {
+        color: green;
+    }
+</style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -28,7 +32,7 @@
             formData.append('csv_file', $('#csv-file')[0].files[0]);
             formData.append('model', $('[name="model"]').val());
 
-            $('#result').text('Model is training. Please wait it takes about 2 minutes or less');
+            $('#result').text('Model is training. Please wait, it takes about 2 minutes or less.');
 
             $.ajax({
                 url: '/predict',
@@ -41,7 +45,7 @@
                 },
                 success: function (response) {
                     $('#result-table tbody').empty();
-                    $('#result').empty();
+                    $('#result').removeClass('text-danger').addClass('text-success').text('Prediction completed successfully!');  // Show success message in green
 
                     $.each(response.data.date, function (index, value) {
                         var newRow = $('<tr>');
@@ -50,8 +54,10 @@
                         $('#result-table tbody').append(newRow);
                     });
                 },
+
                 error: function (xhr, status, error) {
                     console.log(error);
+                    $('#result').text('An error occurred during prediction. Please try again.'); // Show error message
                 }
             });
         });
@@ -61,11 +67,9 @@
 
 <section class="breadcrumbs">
     <div class="container">
-
         <div class="d-flex justify-content-between align-items-center">
             <h2>Prediction Result</h2>
         </div>
-
     </div>
 </section>
 <section class="inner-page">
@@ -99,29 +103,6 @@
         {% endif %}
         
         <p class="text-danger" id="result">{{ error_message }}</p>  <!-- Display any error message -->
-
-        <table class="table table-striped" id="result-table">
-            <thead>
-                <tr>
-                    <th>Symbol</th>
-                    <th>Date</th>
-                    <th>Close Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if data %}
-                    {% for item in data %}
-                    <tr>
-                        <td>{{ item.symbol }}</td>
-                        <td>{{ item.date|date:"Y-m-d" }}</td>  <td>{{ item.close_price }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}  <tr>
-                        <td colspan="3">No predictions found for the given CSV file.</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
     </div>
 </section>
 

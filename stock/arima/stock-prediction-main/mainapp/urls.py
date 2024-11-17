@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import CustomLoginView
+from .views import CustomLoginView,logout_view
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('predict', views.predict, name='predict'),
     path('select-symbol/', views.select_symbol, name='select_symbol'),
     path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', logout_view, name='logout'),
 ]

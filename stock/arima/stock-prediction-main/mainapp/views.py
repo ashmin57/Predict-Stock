@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from django.conf import settings
 import subprocess
 import os
@@ -204,7 +205,7 @@ def get_driver():
     chrome_options = Options()
     chrome_options.binary_location = brave_path
     chrome_options.add_argument("--headless")
-    service = Service('D:\\stock\\arima\\chromedriver\\chromedriver.exe')
+    service = Service('D:\\stockbeta\\stock\\arima\\chromedriver\\chromedriver.exe')
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
@@ -212,6 +213,9 @@ def get_driver():
 def index(request):
     return render(request, 'index.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('index')
 
 def news(request):
     import time
