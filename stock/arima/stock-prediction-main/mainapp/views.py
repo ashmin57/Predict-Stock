@@ -109,6 +109,9 @@ def predict(request):
         elif model == 'BLSTM':
             from .bilstm import bilstm_model
             result = bilstm_model(csv_file)
+        elif model == 'GRU':
+            from .gru import gru_model
+            result = gru_model(csv_file)
         else:
             return JsonResponse({'error': 'Invalid model selected'}, status=400)
 

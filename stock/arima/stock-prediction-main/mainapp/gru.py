@@ -1,12 +1,13 @@
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
-from sklearn.metrics import mean_squared_error, r2_score
-import math
+def gru_model(company):
 
-def bilstm_model(company):
+    import pandas as pd
+    import numpy as np
+    from sklearn.preprocessing import MinMaxScaler
+    from tensorflow.keras.models import Sequential
+    from tensorflow.keras.layers import GRU, Dense, Dropout
+    from sklearn.metrics import mean_squared_error, r2_score
+    import math
+
     # Read the CSV file
     df = pd.read_csv(company)
 
@@ -57,32 +58,37 @@ def bilstm_model(company):
     # Prepare the testing data
     X_test, y_test = prepare_data(test_data, time_steps)
 
-    # Reshape the data for LSTM (samples, time_steps, features)
+    # Reshape the data for GRU (samples, time_steps, features)
     X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
-    # Build the BiLSTM model
+    # Create GRU model
     model = Sequential()
-    model.add(Bidirectional(LSTM(units=150, return_sequences=True), input_shape=(time_steps, 1)))
+    model.add(GRU(units=100, return_sequences=True, input_shape=(time_steps, 1)))
     model.add(Dropout(0.2))
-    model.add(Bidirectional(LSTM(units=150, return_sequences=True)))
+    model.add(GRU(units=100, return_sequences=True))
     model.add(Dropout(0.2))
-    model.add(Bidirectional(LSTM(units=150)))
+    model.add(GRU(units=100))
     model.add(Dense(units=7))  # Output layer with 7 units for predicting 7 days ahead
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     # Train the model
-    model.fit(X_train, y_train, epochs=150, batch_size=32)
+    model.fit(X_train, y_train, epochs=100, batch_size=32)
 
-    # Make predictions for the last week
+    # Predict next 7 days
     last_week_data = scaled_data[-time_steps:, :]
     last_week_data = np.reshape(last_week_data, (1, time_steps, 1))
     predictions = model.predict(last_week_data)
     predictions = scaler.inverse_transform(predictions)
     predicted_close_prices = predictions[0]
 
-    # Define actual_close_prices as the last 7 actual close prices from the dataset
-    actual_close_prices = df['Close'].values[-7:]
+    # Generate prediction dates
+    last_date = df['Date'].iloc[-1]
+    forecast_dates = pd.date_range(start=last_date + pd.DateOffset(days=1), periods=7, freq='D')
+    df_predictions = pd.DataFrame({'close_price': predicted_close_prices.flatten(), 'date': forecast_dates})
+
+    # Calculate actual close prices
+    actual_close_prices = scaler.inverse_transform(test_data[-7:, :])
 
     # Calculate MSE
     mse = mean_squared_error(actual_close_prices, predicted_close_prices)
@@ -96,13 +102,5 @@ def bilstm_model(company):
     r2 = r2_score(actual_close_prices, predicted_close_prices)
     print("R-squared (R2) score:", r2)
 
-    # Prepare the prediction DataFrame
-    last_date = df['Date'].iloc[-1]
-    forecast_dates = pd.date_range(start=last_date + pd.DateOffset(days=1), periods=7, freq='D')
-    df_predictions = pd.DataFrame({'close_price': predicted_close_prices.flatten(), 'date': forecast_dates})
-
     print(df_predictions)
-
     return df_predictions
-
-
